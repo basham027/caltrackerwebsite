@@ -20,8 +20,26 @@ function Dashboard() {
             email: localStorage.getItem('userEmail') || 'user@example.com'
           });
 
-          // Fetch dashboard data from API
-          const response = await fetch('https://getfirestoreusage-zbhi5gq6gq-uc.a.run.app');
+          // Fetch dashboard data from API using POST
+          const currentDate = new Date();
+          const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+          const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0, 23, 59, 59, 999);
+          
+          const payload = {
+            startTime: startDate.toISOString(),
+            endTime: endDate.toISOString(),
+            startDate: startDate.toISOString().split('T')[0],
+            endDate: endDate.toISOString().split('T')[0],
+            includeCosts: "true"
+          };
+
+          const response = await fetch('https://getfirestoreusage-zbhi5gq6gq-uc.a.run.app', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+          });
           
           if (response.ok) {
             const data = await response.json();
