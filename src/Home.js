@@ -108,7 +108,6 @@ export default function Home() {
             Effortless calorie, macro, and protein tracking.<br />
             Challenge friends, scan meals with AI, and celebrate your healthy wins—fun, easy, and always motivating!
           </div>
-          <LoginButton />
           <a className="cta-btn" href="#contact">Contact Us</a>
         </div>
       </section>
