@@ -46,7 +46,7 @@ function ProtectedRoute({ children }) {
         <h1>Access Denied</h1>
         <p>You need to be logged in to access this page.</p>
         <button 
-          onClick={() => window.location.href = '/'}
+          onClick={() => window.location.href = '/login'}
           style={{
             background: '#ff6b35',
             color: '#fff',
@@ -58,7 +58,7 @@ function ProtectedRoute({ children }) {
             marginTop: '1rem'
           }}
         >
-          Go to Home
+          Go to Login
         </button>
       </div>
     );
