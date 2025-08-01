@@ -38,16 +38,43 @@ function Login() {
       return;
     }
 
-    // Simulate login process
-    setTimeout(() => {
-      // For demo purposes, accept any email/password combination
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('userName', formData.email.split('@')[0]);
-      localStorage.setItem('userEmail', formData.email);
-      
+    try {
+      const response = await fetch('https://us-central1-calorie-tracker-app-87bcb.cloudfunctions.net/loginWithPassword', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        // Login successful
+        localStorage.setItem('isAuthenticated', 'true');
+        localStorage.setItem('userName', data.user?.name || formData.email.split('@')[0]);
+        localStorage.setItem('userEmail', formData.email);
+        
+        // Store auth token if provided
+        if (data.token) {
+          localStorage.setItem('authToken', data.token);
+        }
+        
+        setLoading(false);
+        navigate('/dashboard');
+      } else {
+        // Login failed
+        setError(data.message || 'Invalid email or password');
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setError('Network error. Please try again.');
       setLoading(false);
-      navigate('/dashboard');
-    }, 1000);
+    }
   };
 
   const goHome = () => {
