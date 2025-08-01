@@ -1,7 +1,9 @@
-import logo from './logo.png';
 import './App.css';
 import { useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from "./Home";
+import Dashboard from "./Dashboard";
+import ProtectedRoute from "./ProtectedRoute";
 
 function App() {
   useEffect(() => {
@@ -24,16 +26,21 @@ function App() {
     
   }, []);
   
-  /*useEffect(() => {
-    console.log('pathname', window.location.pathname)
-    if (window.location.pathname !== '/') {
-      window.location.href = '/';
-    }
-  }, []);*/
-  
   return (
     <div className="App">
-      <Home/>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } 
+          />
+        </Routes>
+      </Router>
     </div>
   );
 }

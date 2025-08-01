@@ -1,5 +1,55 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./App.css";
+
+function LoginButton() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const authStatus = localStorage.getItem('isAuthenticated');
+    setIsLoggedIn(authStatus === 'true');
+  }, []);
+
+  const handleLogin = () => {
+    // Simulate login process
+    localStorage.setItem('isAuthenticated', 'true');
+    localStorage.setItem('userName', 'John Doe');
+    localStorage.setItem('userEmail', 'john@example.com');
+    setIsLoggedIn(true);
+    navigate('/dashboard');
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('userEmail');
+    setIsLoggedIn(false);
+  };
+
+  const goToDashboard = () => {
+    navigate('/dashboard');
+  };
+
+  if (isLoggedIn) {
+    return (
+      <div className="auth-buttons">
+        <button className="cta-btn secondary" onClick={goToDashboard}>
+          Dashboard
+        </button>
+        <button className="logout-btn-home" onClick={handleLogout}>
+          Logout
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <button className="cta-btn secondary" onClick={handleLogin}>
+      Login
+    </button>
+  );
+}
 
 export default function Home() {
   const [formData, setFormData] = useState({
@@ -7,14 +57,14 @@ export default function Home() {
     email: "",
     message: "",
   });
-  
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -31,7 +81,7 @@ export default function Home() {
           "fromName": formData.name
         }),
       });
-      
+
       if (response.ok) {
         alert("Message sent successfully!");
         setFormData({ name: "", email: "", message: "" });
@@ -58,10 +108,11 @@ export default function Home() {
             Effortless calorie, macro, and protein tracking.<br />
             Challenge friends, scan meals with AI, and celebrate your healthy wins—fun, easy, and always motivating!
           </div>
+          <LoginButton />
           <a className="cta-btn" href="#contact">Contact Us</a>
         </div>
       </section>
-      
+
       {/* FEATURE CARDS SECTION */}
       <div className="section">
         <div className="features-row">
@@ -105,7 +156,7 @@ export default function Home() {
           ))}
         </div>
       </div>
-      
+
       {/* CONTACT SECTION */}
       <div className="section" id="contact">
         <div className="contact-card">
@@ -120,7 +171,7 @@ export default function Home() {
               onChange={handleChange}
               required
             />
-            
+
             <label htmlFor="email">Email</label>
             <input
               type="email"
@@ -130,7 +181,7 @@ export default function Home() {
               onChange={handleChange}
               required
             />
-            
+
             <label htmlFor="message">Message</label>
             <textarea
               id="message"
@@ -139,18 +190,18 @@ export default function Home() {
               onChange={handleChange}
               required
             ></textarea>
-            
+
             <button type="submit">Send Message</button>
           </form>
         </div>
       </div>
-      
+
       {/* LINKS */}
       <div className="links">
         <a href="privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
         <a href="terms.html" target="_blank" rel="noopener noreferrer">Terms of Service</a>
       </div>
-      
+
       <footer>
         &copy; 2025 CapCal AI. All rights reserved.
       </footer>
