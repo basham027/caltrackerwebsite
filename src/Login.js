@@ -55,12 +55,12 @@ function Login() {
       if (response.ok && data.success) {
         // Login successful
         localStorage.setItem('isAuthenticated', 'true');
-        localStorage.setItem('userName', data.user?.name || formData.email.split('@')[0]);
+        localStorage.setItem('userName', data.user?.displayName || formData.email.split('@')[0]);
         localStorage.setItem('userEmail', formData.email);
         
         // Store auth token if provided
-        if (data.token) {
-          localStorage.setItem('authToken', data.token);
+        if (data.idToken) {
+          localStorage.setItem('authToken', data.idToken);
         }
         
         setLoading(false);
@@ -119,8 +119,8 @@ function Login() {
             />
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="login-btn"
             disabled={loading}
           >
