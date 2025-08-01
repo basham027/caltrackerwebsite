@@ -1,0 +1,17 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "TH598N7H8K.com.mafooly.caloriai",
+        "paths": ["/com.mafooly.caloriai/*"]
+      }
+    ]
+  },
+  "activitycontinuation": {
+    "apps": ["TH598N7H8K.com.mafooly.caloriai"]
+  },
+  "webcredentials": {
+    "apps": ["TH598N7H8K.com.mafooly.caloriai"]
+  }
+}

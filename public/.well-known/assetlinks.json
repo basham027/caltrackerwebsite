@@ -1,0 +1,13 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.mafooly.caloriai",
+      "sha256_cert_fingerprints": [
+        "AD:20:3D:D6:1F:8D:73:86:FF:B4:2B:B0:5F:25:18:71:50:71:B6:92:1A:83:94:A3:09:B7:4F:41:C6:61:35:F8",
+        "04:F1:93:E5:5B:5B:5B:81:ED:CB:39:6A:13:FC:4F:85:45:62:80:01:35:F6:7A:61:CB:7A:09:17:18:BF:3F:72"
+      ]
+    }
+  }
+]
