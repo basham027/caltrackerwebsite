@@ -4,25 +4,41 @@ import './Dashboard.css';
 
 function Dashboard() {
   const [user, setUser] = useState(null);
+  const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Check if user is authenticated
-    const checkAuth = () => {
-      // Simulate checking authentication status
-      // In a real app, this would check tokens, session, etc.
-      const isAuthenticated = localStorage.getItem('isAuthenticated');
-      
-      if (isAuthenticated === 'true') {
-        setUser({
-          name: localStorage.getItem('userName') || 'User',
-          email: localStorage.getItem('userEmail') || 'user@example.com'
-        });
+    const fetchDashboardData = async () => {
+      try {
+        // Check if user is authenticated
+        const isAuthenticated = localStorage.getItem('isAuthenticated');
+        
+        if (isAuthenticated === 'true') {
+          setUser({
+            name: localStorage.getItem('userName') || 'User',
+            email: localStorage.getItem('userEmail') || 'user@example.com'
+          });
+
+          // Fetch dashboard data from API
+          const response = await fetch('https://getfirestoreusage-zbhi5gq6gq-uc.a.run.app');
+          
+          if (response.ok) {
+            const data = await response.json();
+            setDashboardData(data);
+          } else {
+            setError('Failed to fetch dashboard data');
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        setError('Network error occurred');
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
-    checkAuth();
+    fetchDashboardData();
   }, []);
 
   const handleLogout = () => {
@@ -56,43 +72,60 @@ function Dashboard() {
           <p>Track your calories and reach your fitness goals with CapCal AI.</p>
         </div>
 
-        <div className="dashboard-grid">
-          <div className="dashboard-card">
-            <h3>Today's Calories</h3>
-            <div className="metric">
-              <span className="metric-number">1,250</span>
-              <span className="metric-unit">kcal</span>
-            </div>
-            <p className="metric-goal">Goal: 2,000 kcal</p>
+        {error && (
+          <div className="error-message">
+            <p>Error: {error}</p>
           </div>
+        )}
 
-          <div className="dashboard-card">
-            <h3>Protein</h3>
-            <div className="metric">
-              <span className="metric-number">85</span>
-              <span className="metric-unit">g</span>
+        {dashboardData ? (
+          <div className="dashboard-grid">
+            <div className="dashboard-card">
+              <h3>API Response</h3>
+              <div className="api-data">
+                {typeof dashboardData === 'object' ? (
+                  <pre>{JSON.stringify(dashboardData, null, 2)}</pre>
+                ) : (
+                  <p>{dashboardData}</p>
+                )}
+              </div>
             </div>
-            <p className="metric-goal">Goal: 120g</p>
-          </div>
 
-          <div className="dashboard-card">
-            <h3>Water Intake</h3>
-            <div className="metric">
-              <span className="metric-number">6</span>
-              <span className="metric-unit">glasses</span>
+            <div className="dashboard-card">
+              <h3>Data Status</h3>
+              <div className="metric">
+                <span className="metric-number">✓</span>
+                <span className="metric-unit">Connected</span>
+              </div>
+              <p className="metric-goal">API is responding</p>
             </div>
-            <p className="metric-goal">Goal: 8 glasses</p>
-          </div>
 
-          <div className="dashboard-card">
-            <h3>Weight Progress</h3>
-            <div className="metric">
-              <span className="metric-number">72.5</span>
-              <span className="metric-unit">kg</span>
+            <div className="dashboard-card">
+              <h3>Today's Calories</h3>
+              <div className="metric">
+                <span className="metric-number">1,250</span>
+                <span className="metric-unit">kcal</span>
+              </div>
+              <p className="metric-goal">Goal: 2,000 kcal</p>
             </div>
-            <p className="metric-goal">Target: 70kg</p>
+
+            <div className="dashboard-card">
+              <h3>Protein</h3>
+              <div className="metric">
+                <span className="metric-number">85</span>
+                <span className="metric-unit">g</span>
+              </div>
+              <p className="metric-goal">Goal: 120g</p>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="dashboard-grid">
+            <div className="dashboard-card">
+              <h3>Loading Data...</h3>
+              <p>Fetching your dashboard information</p>
+            </div>
+          </div>
+        )}
 
         <div className="quick-actions">
           <h2>Quick Actions</h2>

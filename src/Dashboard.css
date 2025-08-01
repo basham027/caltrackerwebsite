@@ -175,6 +175,37 @@
   color: #667eea;
 }
 
+.error-message {
+  background: rgba(255, 107, 107, 0.2);
+  border: 1px solid rgba(255, 107, 107, 0.5);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.error-message p {
+  margin: 0;
+  color: #ff6b6b;
+}
+
+.api-data {
+  max-height: 300px;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: left;
+}
+
+.api-data pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-size: 0.8rem;
+  color: #e8e8e8;
+}
+
 @media (max-width: 768px) {
   .dashboard-nav {
     padding: 0 1rem;
