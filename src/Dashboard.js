@@ -66,9 +66,25 @@ function Dashboard() {
     window.location.href = '/';
   };
 
+  const formatNumber = (num) => {
+    if (num >= 1000000) {
+      return (num / 1000000).toFixed(1) + 'M';
+    } else if (num >= 1000) {
+      return (num / 1000).toFixed(1) + 'K';
+    }
+    return num?.toLocaleString() || '0';
+  };
+
+  const formatCurrency = (amount) => {
+    return amount ? `$${amount.toFixed(4)}` : '$0.0000';
+  };
+
   if (loading) {
     return <div className="dashboard-loading">Loading...</div>;
   }
+
+  const operations = dashboardData?.operations || {};
+  const billing = dashboardData?.billing?.actual || {};
 
   return (
     <div className="dashboard">
@@ -76,7 +92,7 @@ function Dashboard() {
         <div className="dashboard-nav">
           <div className="dashboard-logo">
             <img src="logo_rounded.png" alt="CapCal AI" className="nav-logo" />
-            <span>CapCal AI Dashboard</span>
+            <span>Firestore Usage Dashboard</span>
           </div>
           <button onClick={handleLogout} className="logout-btn">
             Logout
@@ -87,7 +103,7 @@ function Dashboard() {
       <main className="dashboard-content">
         <div className="welcome-section">
           <h1>Welcome back, {user?.name}!</h1>
-          <p>Track your calories and reach your fitness goals with CapCal AI.</p>
+          <p>Monitor your Firestore usage and costs.</p>
         </div>
 
         {error && (
@@ -97,63 +113,136 @@ function Dashboard() {
         )}
 
         {dashboardData ? (
-          <div className="dashboard-grid">
-            <div className="dashboard-card">
-              <h3>API Response</h3>
-              <div className="api-data">
-                {typeof dashboardData === 'object' ? (
+          <>
+            {/* Operations Overview */}
+            <div className="section-header">
+              <h2>Operations Overview</h2>
+              <p>Current month's database operations</p>
+            </div>
+
+            <div className="operations-grid">
+              <div className="operation-card reads">
+                <div className="operation-header">
+                  <div className="operation-icon">📖</div>
+                  <h3>Read Operations</h3>
+                </div>
+                <div className="operation-stats">
+                  <div className="stat-number">{formatNumber(operations.read)}</div>
+                  <div className="stat-label">Total Reads</div>
+                </div>
+                <div className="operation-cost">
+                  <span>Cost: {formatCurrency(billing.reads)}</span>
+                </div>
+              </div>
+
+              <div className="operation-card writes">
+                <div className="operation-header">
+                  <div className="operation-icon">✏️</div>
+                  <h3>Write Operations</h3>
+                </div>
+                <div className="operation-stats">
+                  <div className="stat-number">{formatNumber(operations.write)}</div>
+                  <div className="stat-label">Total Writes</div>
+                </div>
+                <div className="operation-cost">
+                  <span>Cost: {formatCurrency(billing.writes)}</span>
+                </div>
+              </div>
+
+              <div className="operation-card deletes">
+                <div className="operation-header">
+                  <div className="operation-icon">🗑️</div>
+                  <h3>Delete Operations</h3>
+                </div>
+                <div className="operation-stats">
+                  <div className="stat-number">{formatNumber(operations.delete)}</div>
+                  <div className="stat-label">Total Deletes</div>
+                </div>
+                <div className="operation-cost">
+                  <span>Cost: {formatCurrency(billing.deletes)}</span>
+                </div>
+              </div>
+
+              <div className="operation-card requests">
+                <div className="operation-header">
+                  <div className="operation-icon">🌐</div>
+                  <h3>Total Requests</h3>
+                </div>
+                <div className="operation-stats">
+                  <div className="stat-number">{formatNumber(operations.request)}</div>
+                  <div className="stat-label">All Requests</div>
+                </div>
+                <div className="operation-cost">
+                  <span>Total Cost: {formatCurrency((billing.reads || 0) + (billing.writes || 0) + (billing.deletes || 0))}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Cost Breakdown */}
+            <div className="section-header">
+              <h2>Cost Breakdown</h2>
+              <p>Detailed billing information</p>
+            </div>
+
+            <div className="cost-grid">
+              <div className="cost-card">
+                <h3>Current Period Total</h3>
+                <div className="cost-amount">
+                  {formatCurrency((billing.reads || 0) + (billing.writes || 0) + (billing.deletes || 0))}
+                </div>
+                <div className="cost-breakdown">
+                  <div className="breakdown-item">
+                    <span>Reads:</span>
+                    <span>{formatCurrency(billing.reads)}</span>
+                  </div>
+                  <div className="breakdown-item">
+                    <span>Writes:</span>
+                    <span>{formatCurrency(billing.writes)}</span>
+                  </div>
+                  <div className="breakdown-item">
+                    <span>Deletes:</span>
+                    <span>{formatCurrency(billing.deletes)}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="cost-card">
+                <h3>Usage Efficiency</h3>
+                <div className="efficiency-stats">
+                  <div className="efficiency-item">
+                    <span>Read/Write Ratio</span>
+                    <span>{operations.read && operations.write ? (operations.read / operations.write).toFixed(2) : 'N/A'}</span>
+                  </div>
+                  <div className="efficiency-item">
+                    <span>Cost per 1K Reads</span>
+                    <span>{operations.read ? formatCurrency((billing.reads || 0) / (operations.read / 1000)) : 'N/A'}</span>
+                  </div>
+                  <div className="efficiency-item">
+                    <span>Cost per 1K Writes</span>
+                    <span>{operations.write ? formatCurrency((billing.writes || 0) / (operations.write / 1000)) : 'N/A'}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Raw Data (Collapsible) */}
+            <div className="raw-data-section">
+              <details className="raw-data-details">
+                <summary>View Raw API Response</summary>
+                <div className="api-data">
                   <pre>{JSON.stringify(dashboardData, null, 2)}</pre>
-                ) : (
-                  <p>{dashboardData}</p>
-                )}
-              </div>
+                </div>
+              </details>
             </div>
-
-            <div className="dashboard-card">
-              <h3>Data Status</h3>
-              <div className="metric">
-                <span className="metric-number">✓</span>
-                <span className="metric-unit">Connected</span>
-              </div>
-              <p className="metric-goal">API is responding</p>
-            </div>
-
-            <div className="dashboard-card">
-              <h3>Today's Calories</h3>
-              <div className="metric">
-                <span className="metric-number">1,250</span>
-                <span className="metric-unit">kcal</span>
-              </div>
-              <p className="metric-goal">Goal: 2,000 kcal</p>
-            </div>
-
-            <div className="dashboard-card">
-              <h3>Protein</h3>
-              <div className="metric">
-                <span className="metric-number">85</span>
-                <span className="metric-unit">g</span>
-              </div>
-              <p className="metric-goal">Goal: 120g</p>
-            </div>
-          </div>
+          </>
         ) : (
-          <div className="dashboard-grid">
-            <div className="dashboard-card">
-              <h3>Loading Data...</h3>
-              <p>Fetching your dashboard information</p>
+          <div className="loading-state">
+            <div className="loading-card">
+              <h3>Loading Usage Data...</h3>
+              <p>Fetching your Firestore statistics</p>
             </div>
           </div>
         )}
-
-        <div className="quick-actions">
-          <h2>Quick Actions</h2>
-          <div className="action-buttons">
-            <button className="action-btn primary">Log Food</button>
-            <button className="action-btn">Add Exercise</button>
-            <button className="action-btn">Update Weight</button>
-            <button className="action-btn">View Reports</button>
-          </div>
-        </div>
       </main>
     </div>
   );
