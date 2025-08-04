@@ -55,9 +55,9 @@ function Dashboard() {
           
           const endDate = new Date(Date.UTC(
             currentDate.getUTCFullYear(),
-            currentDate.getUTCMonth() +1 , // next month
-            1, // first day of next month
-            0, 0, 0, 0
+            currentDate.getUTCMonth() +1, // next month
+            -1, // 👉 day 0 of next month = last day of this month
+            23, 59, 59, 999 // optional: last moment of the day
           ));
           
           
@@ -232,37 +232,35 @@ function Dashboard() {
         <div className="welcome-section">
           <h1>Welcome back, {user?.name}!</h1>
           <p>Monitor your Firestore usage and costs.</p>
-          {dashboardData && (
-            <div className="total-cost-display">
-              <div className="total-cost-card">
-                <h2>Total Cost This Period</h2>
-                <div className="total-cost-amount">
-                  {formatCurrency(billing?.totalCost)}
-                </div>
-                <p>Current month's Firestore usage cost</p>
-              </div>
-            </div>
-          )}
         </div>
 
         {dashboardData && (
           <>
             {/* Duration Display */}
             <div className="duration-section">
+              <div className="total-cost-display">
+                <div className="total-cost-card">
+                  <h2>Total Cost This Period</h2>
+                  <div className="total-cost-amount">
+                    {formatCurrency(billing?.totalCost)}
+                  </div>
+                  <p>Current month's Firestore usage cost</p>
+                </div>
+              </div>
               <div className="duration-card">
                 <h3>Selected Period</h3>
                 <div className="duration-info">
                   <div className="date-range">
                     <span className="date-label">From:</span>
-                    <span className="date-value">{new Date(dashboardData?.startDate || new Date()).toLocaleDateString()}</span>
+                    <span className="date-value">{new Date(dashboardData?.report?.timeRange?.startTime || new Date()).toLocaleDateString()}</span>
                   </div>
                   <div className="date-range">
                     <span className="date-label">To:</span>
-                    <span className="date-value">{new Date(dashboardData?.endDate || new Date()).toLocaleDateString()}</span>
+                    <span className="date-value">{new Date(dashboardData?.report?.timeRange?.endTime || new Date()).toLocaleDateString()}</span>
                   </div>
                   <div className="duration-summary">
                     <span className="duration-days">
-                      {Math.ceil((new Date(dashboardData?.endDate || new Date()) - new Date(dashboardData?.startDate || new Date())) / (1000 * 60 * 60 * 24))} days
+                      {Math.ceil((new Date(dashboardData?.report?.timeRange?.endTime || new Date()) - new Date(dashboardData?.report?.timeRange?.startTime || new Date())) / (1000 * 60 * 60 * 24))} days
                     </span>
                   </div>
                 </div>
