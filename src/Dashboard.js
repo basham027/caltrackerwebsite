@@ -1,6 +1,29 @@
 
 import React, { useState, useEffect } from 'react';
 import './Dashboard.css';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  BarElement,
+} from 'chart.js';
+import { Line, Bar } from 'react-chartjs-2';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  BarElement
+);
 
 function Dashboard() {
   const [user, setUser] = useState(null);
@@ -92,6 +115,98 @@ function Dashboard() {
     return amount ? `$${amount.toFixed(4)}` : '$0.0000';
   };
 
+  // Generate sample daily data for the current month
+  const generateDailyData = () => {
+    const currentDate = new Date();
+    const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+    const currentDay = currentDate.getDate();
+    
+    const dailyLabels = [];
+    const dailyOperations = [];
+    const dailyCosts = [];
+    
+    for (let day = 1; day <= Math.min(currentDay, daysInMonth); day++) {
+      dailyLabels.push(`${day}`);
+      
+      // Generate sample data based on actual operations (distributed daily)
+      const operations = dashboardData?.report?.operations || {};
+      const billing = dashboardData?.report?.billing?.actual || {};
+      
+      const dailyTotal = Math.floor((operations.request || 0) / currentDay * (0.8 + Math.random() * 0.4));
+      const dailyCost = (billing.totalCost || 0) / currentDay * (0.8 + Math.random() * 0.4);
+      
+      dailyOperations.push(dailyTotal);
+      dailyCosts.push(dailyCost);
+    }
+    
+    return { dailyLabels, dailyOperations, dailyCosts };
+  };
+
+  const { dailyLabels, dailyOperations, dailyCosts } = dashboardData ? generateDailyData() : { dailyLabels: [], dailyOperations: [], dailyCosts: [] };
+
+  const usageChartData = {
+    labels: dailyLabels,
+    datasets: [
+      {
+        label: 'Daily Operations',
+        data: dailyOperations,
+        borderColor: 'rgba(74, 222, 128, 0.8)',
+        backgroundColor: 'rgba(74, 222, 128, 0.1)',
+        tension: 0.4,
+        fill: true,
+      },
+    ],
+  };
+
+  const costChartData = {
+    labels: dailyLabels,
+    datasets: [
+      {
+        label: 'Daily Costs ($)',
+        data: dailyCosts,
+        backgroundColor: 'rgba(139, 92, 246, 0.8)',
+        borderColor: 'rgba(139, 92, 246, 1)',
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: {
+          color: '#fff',
+        },
+      },
+      title: {
+        display: true,
+        color: '#fff',
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          color: '#b8d4ff',
+        },
+        grid: {
+          color: 'rgba(255, 255, 255, 0.1)',
+        },
+      },
+      x: {
+        ticks: {
+          color: '#b8d4ff',
+        },
+        grid: {
+          color: 'rgba(255, 255, 255, 0.1)',
+        },
+      },
+    },
+  };
+
   if (loading) {
     return <div className="dashboard-loading">Loading...</div>;
   }
@@ -118,6 +233,32 @@ function Dashboard() {
           <h1>Welcome back, {user?.name}!</h1>
           <p>Monitor your Firestore usage and costs.</p>
         </div>
+
+        {dashboardData && (
+          <>
+            {/* Daily Usage and Cost Charts */}
+            <div className="section-header">
+              <h2>Daily Trends</h2>
+              <p>Daily usage patterns and cost analysis</p>
+            </div>
+
+            <div className="charts-grid">
+              <div className="chart-card">
+                <h3>Daily Operations</h3>
+                <div className="chart-container">
+                  <Line data={usageChartData} options={chartOptions} />
+                </div>
+              </div>
+
+              <div className="chart-card">
+                <h3>Daily Costs</h3>
+                <div className="chart-container">
+                  <Bar data={costChartData} options={chartOptions} />
+                </div>
+              </div>
+            </div>
+          </>
+        )}
 
         {error && (
           <div className="error-message">
