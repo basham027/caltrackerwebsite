@@ -232,6 +232,17 @@ function Dashboard() {
         <div className="welcome-section">
           <h1>Welcome back, {user?.name}!</h1>
           <p>Monitor your Firestore usage and costs.</p>
+          {dashboardData && (
+            <div className="total-cost-display">
+              <div className="total-cost-card">
+                <h2>Total Cost This Period</h2>
+                <div className="total-cost-amount">
+                  {formatCurrency(billing?.totalCost)}
+                </div>
+                <p>Current month's Firestore usage cost</p>
+              </div>
+            </div>
+          )}
         </div>
 
         {dashboardData && (
