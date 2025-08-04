@@ -30,9 +30,32 @@ function Dashboard() {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [dateRange, setDateRange] = useState({
+    startDate: '',
+    endDate: ''
+  });
 
+  // Initialize date range with current month
   useEffect(() => {
-    const fetchDashboardData = async () => {
+    const currentDate = new Date();
+    const startDate = new Date(Date.UTC(
+      currentDate.getUTCFullYear(),
+      currentDate.getUTCMonth(),
+      1, 0, 0, 0, 0
+    ));
+    const endDate = new Date(Date.UTC(
+      currentDate.getUTCFullYear(),
+      currentDate.getUTCMonth() + 1,
+      -1, 23, 59, 59, 999
+    ));
+    
+    setDateRange({
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0]
+    });
+  }, []);
+
+  const fetchDashboardData = async (customStartDate = null, customEndDate = null) => {
       try {
         // Check if user is authenticated
         const isAuthenticated = localStorage.getItem('isAuthenticated');
@@ -43,22 +66,25 @@ function Dashboard() {
             email: localStorage.getItem('userEmail') || 'user@example.com'
           });
 
-          // Fetch dashboard data from API using POST
-          const currentDate = new Date();
+          // Use custom dates or fall back to current month
+          let startDate, endDate;
           
-          const startDate = new Date(Date.UTC(
-            currentDate.getUTCFullYear(),
-            currentDate.getUTCMonth(),
-            1, // day 1
-            0, 0, 0, 0
-          ));
-          
-          const endDate = new Date(Date.UTC(
-            currentDate.getUTCFullYear(),
-            currentDate.getUTCMonth() +1, // next month
-            -1, // 👉 day 0 of next month = last day of this month
-            23, 59, 59, 999 // optional: last moment of the day
-          ));
+          if (customStartDate && customEndDate) {
+            startDate = new Date(customStartDate + 'T00:00:00.000Z');
+            endDate = new Date(customEndDate + 'T23:59:59.999Z');
+          } else {
+            const currentDate = new Date();
+            startDate = new Date(Date.UTC(
+              currentDate.getUTCFullYear(),
+              currentDate.getUTCMonth(),
+              1, 0, 0, 0, 0
+            ));
+            endDate = new Date(Date.UTC(
+              currentDate.getUTCFullYear(),
+              currentDate.getUTCMonth() + 1,
+              -1, 23, 59, 59, 999
+            ));
+          }
           
           
           const payload = {
@@ -91,9 +117,27 @@ function Dashboard() {
         setLoading(false);
       }
     };
+  
+  useEffect(() => {
+    if (dateRange.startDate && dateRange.endDate) {
+      fetchDashboardData(dateRange.startDate, dateRange.endDate);
+    }
+  }, [dateRange]);
 
-    fetchDashboardData();
-  }, []);
+  const handleDateRangeChange = (e) => {
+    const { name, value } = e.target;
+    setDateRange(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const applyDateRange = () => {
+    if (dateRange.startDate && dateRange.endDate) {
+      setLoading(true);
+      fetchDashboardData(dateRange.startDate, dateRange.endDate);
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('isAuthenticated');
@@ -221,6 +265,28 @@ function Dashboard() {
           <div className="dashboard-logo">
             <img src="logo_rounded.png" alt="CapCal AI" className="nav-logo" />
             <span>Firestore Usage Dashboard</span>
+          </div>
+          <div className="date-range-selector">
+            <div className="date-inputs">
+              <input
+                type="date"
+                name="startDate"
+                value={dateRange.startDate}
+                onChange={handleDateRangeChange}
+                className="date-input"
+              />
+              <span className="date-separator">to</span>
+              <input
+                type="date"
+                name="endDate"
+                value={dateRange.endDate}
+                onChange={handleDateRangeChange}
+                className="date-input"
+              />
+              <button onClick={applyDateRange} className="apply-date-btn">
+                Apply
+              </button>
+            </div>
           </div>
           <button onClick={handleLogout} className="logout-btn">
             Logout
