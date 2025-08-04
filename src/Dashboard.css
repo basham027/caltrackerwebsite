@@ -78,6 +78,71 @@
   color: #b8d4ff;
 }
 
+.duration-section {
+  margin-bottom: 2rem;
+}
+
+.duration-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  max-width: 400px;
+  margin: 0 auto;
+  border-left: 4px solid #10b981;
+}
+
+.duration-card h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.2rem;
+  color: #fff;
+}
+
+.duration-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.date-range {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.date-range:last-child {
+  border-bottom: none;
+}
+
+.date-label {
+  color: #b8d4ff;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.date-value {
+  color: #fff;
+  font-weight: 600;
+}
+
+.duration-summary {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  background: rgba(16, 185, 129, 0.2);
+  border-radius: 8px;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.duration-days {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #10b981;
+}
+
 .section-header {
   margin-bottom: 2rem;
 }

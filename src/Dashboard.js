@@ -236,6 +236,28 @@ function Dashboard() {
 
         {dashboardData && (
           <>
+            {/* Duration Display */}
+            <div className="duration-section">
+              <div className="duration-card">
+                <h3>Selected Period</h3>
+                <div className="duration-info">
+                  <div className="date-range">
+                    <span className="date-label">From:</span>
+                    <span className="date-value">{new Date(dashboardData?.startDate || new Date()).toLocaleDateString()}</span>
+                  </div>
+                  <div className="date-range">
+                    <span className="date-label">To:</span>
+                    <span className="date-value">{new Date(dashboardData?.endDate || new Date()).toLocaleDateString()}</span>
+                  </div>
+                  <div className="duration-summary">
+                    <span className="duration-days">
+                      {Math.ceil((new Date(dashboardData?.endDate || new Date()) - new Date(dashboardData?.startDate || new Date())) / (1000 * 60 * 60 * 24))} days
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Daily Usage and Cost Charts */}
             <div className="section-header">
               <h2>Daily Trends</h2>
