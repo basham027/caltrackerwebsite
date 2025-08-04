@@ -22,8 +22,21 @@ function Dashboard() {
 
           // Fetch dashboard data from API using POST
           const currentDate = new Date();
-          const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-          const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0, 23, 59, 59, 999);
+          
+          const startDate = new Date(Date.UTC(
+            currentDate.getUTCFullYear(),
+            currentDate.getUTCMonth(),
+            1, // day 1
+            0, 0, 0, 0
+          ));
+          
+          const endDate = new Date(Date.UTC(
+            currentDate.getUTCFullYear(),
+            currentDate.getUTCMonth() +1 , // next month
+            1, // first day of next month
+            0, 0, 0, 0
+          ));
+          
           
           const payload = {
             startTime: startDate.toISOString(),
@@ -83,8 +96,8 @@ function Dashboard() {
     return <div className="dashboard-loading">Loading...</div>;
   }
 
-  const operations = dashboardData?.operations || {};
-  const billing = dashboardData?.billing?.actual || {};
+  const operations = dashboardData?.report?.operations || {};
+  const billing = dashboardData?.report?.billing?.actual || {};
 
   return (
     <div className="dashboard">
@@ -131,7 +144,7 @@ function Dashboard() {
                   <div className="stat-label">Total Reads</div>
                 </div>
                 <div className="operation-cost">
-                  <span>Cost: {formatCurrency(billing.reads)}</span>
+                  <span>Cost: {formatCurrency(billing?.totalCosts?.readCost)}</span>
                 </div>
               </div>
 
@@ -145,7 +158,7 @@ function Dashboard() {
                   <div className="stat-label">Total Writes</div>
                 </div>
                 <div className="operation-cost">
-                  <span>Cost: {formatCurrency(billing.writes)}</span>
+                  <span>Cost: {formatCurrency(billing?.totalCosts?.writeCost)}</span>
                 </div>
               </div>
 
@@ -159,7 +172,7 @@ function Dashboard() {
                   <div className="stat-label">Total Deletes</div>
                 </div>
                 <div className="operation-cost">
-                  <span>Cost: {formatCurrency(billing.deletes)}</span>
+                  <span>Cost: {formatCurrency(billing?.totalCosts?.deleteCost)}</span>
                 </div>
               </div>
 
@@ -173,7 +186,7 @@ function Dashboard() {
                   <div className="stat-label">All Requests</div>
                 </div>
                 <div className="operation-cost">
-                  <span>Total Cost: {formatCurrency((billing.reads || 0) + (billing.writes || 0) + (billing.deletes || 0))}</span>
+                  <span>Total Cost: {formatCurrency(billing?.totalCost)}</span>
                 </div>
               </div>
             </div>
@@ -188,51 +201,27 @@ function Dashboard() {
               <div className="cost-card">
                 <h3>Current Period Total</h3>
                 <div className="cost-amount">
-                  {formatCurrency((billing.reads || 0) + (billing.writes || 0) + (billing.deletes || 0))}
+                  {formatCurrency(billing?.totalCost)}
                 </div>
                 <div className="cost-breakdown">
                   <div className="breakdown-item">
                     <span>Reads:</span>
-                    <span>{formatCurrency(billing.reads)}</span>
+                    <span>{formatCurrency(billing?.totalCosts?.readCost)}</span>
                   </div>
                   <div className="breakdown-item">
                     <span>Writes:</span>
-                    <span>{formatCurrency(billing.writes)}</span>
+                    <span>{formatCurrency(billing?.totalCosts?.writeCost)}</span>
                   </div>
                   <div className="breakdown-item">
                     <span>Deletes:</span>
-                    <span>{formatCurrency(billing.deletes)}</span>
+                    <span>{formatCurrency(billing?.totalCosts?.deleteCost)}</span>
+                  </div>
+                  <div className="breakdown-item">
+                    <span>Functions:</span>
+                    <span>{formatCurrency(billing?.totalCosts?.cloudFunctionInvocationCost)}</span>
                   </div>
                 </div>
               </div>
-
-              <div className="cost-card">
-                <h3>Usage Efficiency</h3>
-                <div className="efficiency-stats">
-                  <div className="efficiency-item">
-                    <span>Read/Write Ratio</span>
-                    <span>{operations.read && operations.write ? (operations.read / operations.write).toFixed(2) : 'N/A'}</span>
-                  </div>
-                  <div className="efficiency-item">
-                    <span>Cost per 1K Reads</span>
-                    <span>{operations.read ? formatCurrency((billing.reads || 0) / (operations.read / 1000)) : 'N/A'}</span>
-                  </div>
-                  <div className="efficiency-item">
-                    <span>Cost per 1K Writes</span>
-                    <span>{operations.write ? formatCurrency((billing.writes || 0) / (operations.write / 1000)) : 'N/A'}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Raw Data (Collapsible) */}
-            <div className="raw-data-section">
-              <details className="raw-data-details">
-                <summary>View Raw API Response</summary>
-                <div className="api-data">
-                  <pre>{JSON.stringify(dashboardData, null, 2)}</pre>
-                </div>
-              </details>
             </div>
           </>
         ) : (
