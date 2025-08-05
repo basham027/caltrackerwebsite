@@ -53,6 +53,7 @@ function Dashboard() {
       startDate: startDate.toISOString().split('T')[0],
       endDate: endDate.toISOString().split('T')[0]
     });
+    fetchDashboardData();
   }, []);
 
   const fetchDashboardData = async (customStartDate = null, customEndDate = null) => {
@@ -119,9 +120,9 @@ function Dashboard() {
     };
   
   useEffect(() => {
-    if (dateRange.startDate && dateRange.endDate) {
+   /* if (dateRange.startDate && dateRange.endDate) {
       fetchDashboardData(dateRange.startDate, dateRange.endDate);
-    }
+    }*/
   }, [dateRange]);
 
   const handleDateRangeChange = (e) => {
@@ -172,41 +173,52 @@ function Dashboard() {
     const dailyLabels = [];
     const dailyOperations = [];
     const dailyCosts = [];
+    const firestoreCosts = [];
+    const openaiCosts = [];
     const dailyReads = [];
     const dailyWrites = [];
     const dailyDeletes = [];
     
-    const operations = dashboardData?.report?.operations || {};
+    const operationsData = dashboardData?.report?.dailyUsage || [];
+    console.log('operationsData', operationsData)
     const billing = dashboardData?.report?.billing?.actual || {};
     
-    for (let i = 0; i < Math.min(daysDiff, 31); i++) {
-      const currentDate = new Date(startDate);
-      currentDate.setDate(startDate.getDate() + i);
+    for (let i = 0; i < operationsData.length; i++) {
+      const currentDate = new Date(operationsData[i].date);
+     // currentDate.setDate(startDate.getDate() + i);
       
       // Format label as MM/DD
       const label = `${(currentDate.getMonth() + 1).toString().padStart(2, '0')}/${currentDate.getDate().toString().padStart(2, '0')}`;
       dailyLabels.push(label);
       
+      const operations = operationsData[i].operations;
+      
       // Distribute operations across days with realistic variance
       const variance = 0.7 + Math.random() * 0.6; // 70% to 130% of average
-      const dailyTotal = Math.floor((operations.request || 0) / daysDiff * variance);
-      const dailyRead = Math.floor((operations.read || 0) / daysDiff * variance);
-      const dailyWrite = Math.floor((operations.write || 0) / daysDiff * variance);
-      const dailyDelete = Math.floor((operations.delete || 0) / daysDiff * variance);
-      const dailyCost = (billing.totalCost || 0) / daysDiff * variance;
+      const dailyTotal = (operations.request || 0).toFixed(2);
+      const dailyRead = (operations.read || 0).toFixed(2);
+      const dailyWrite = (operations.write || 0).toFixed(2);
+      const dailyDelete = (operations.delete || 0).toFixed(2);
+      const dailyCost =   (operationsData[i].costs.totalDayCost || 0).toFixed(2);
+      const firestoreCost =   (operationsData[i].costs.totalFirestoreCost || 0).toFixed(2);
+      const openaiCost =   (operationsData[i].costs.openaiCost || 0).toFixed(2);
+      
+      console.log('operations', operations)
       
       dailyOperations.push(dailyTotal);
       dailyReads.push(dailyRead);
       dailyWrites.push(dailyWrite);
       dailyDeletes.push(dailyDelete);
       dailyCosts.push(dailyCost);
+      openaiCosts.push(openaiCost);
+      firestoreCosts.push(firestoreCost)
     }
     
-    return { dailyLabels, dailyOperations, dailyCosts, dailyReads, dailyWrites, dailyDeletes };
+    return { dailyLabels, dailyOperations, dailyCosts, dailyReads, dailyWrites, dailyDeletes, openaiCosts, firestoreCosts };
   };
 
-  const { dailyLabels, dailyOperations, dailyCosts, dailyReads, dailyWrites, dailyDeletes } = dashboardData ? generateDailyData() : { 
-    dailyLabels: [], dailyOperations: [], dailyCosts: [], dailyReads: [], dailyWrites: [], dailyDeletes: [] 
+  const { dailyLabels, dailyOperations, dailyCosts, dailyReads, dailyWrites, dailyDeletes, openaiCosts, firestoreCosts } = dashboardData ? generateDailyData() : {
+    dailyLabels: [], dailyOperations: [], dailyCosts: [], dailyReads: [], dailyWrites: [], dailyDeletes: [], openaiCosts: [], firestoreCosts: []
   };
 
   const usageChartData = {
@@ -253,6 +265,36 @@ function Dashboard() {
         data: dailyCosts,
         backgroundColor: 'rgba(139, 92, 246, 0.8)',
         borderColor: 'rgba(139, 92, 246, 1)',
+        borderWidth: 2,
+        borderRadius: 6,
+        borderSkipped: false,
+      },
+    ],
+  };
+  
+  const firestoreChartData = {
+    labels: dailyLabels,
+    datasets: [
+      {
+        label: 'Firestore Costs ($)',
+        data: firestoreCosts,
+        borderColor: 'rgba(74, 222, 128, 0.9)',
+        backgroundColor: 'rgba(74, 222, 128, 0.2)',
+        borderWidth: 2,
+        borderRadius: 6,
+        borderSkipped: false,
+      },
+    ],
+  };
+  
+  const openaiChartData = {
+    labels: dailyLabels,
+    datasets: [
+      {
+        label: 'Daily Costs ($)',
+        data: openaiCosts,
+        borderColor: 'rgba(245, 158, 11, 0.9)',
+        backgroundColor: 'rgba(245, 158, 11, 0.2)',
         borderWidth: 2,
         borderRadius: 6,
         borderSkipped: false,
@@ -410,7 +452,7 @@ function Dashboard() {
       <main className="dashboard-content">
         <div className="welcome-section">
           <h1>Welcome back, {user?.name}!</h1>
-          <p>Monitor your Firestore usage and costs.</p>
+          <p>Monitor your Usage and Costs.</p>
         </div>
 
         {dashboardData && (
@@ -423,7 +465,7 @@ function Dashboard() {
                   <div className="total-cost-amount">
                     {formatCurrency(billing?.totalCost)}
                   </div>
-                  <p>Current month's Firestore usage cost</p>
+                  {/*<p>Total usage cost</p>*/}
                 </div>
               </div>
               <div className="duration-card">
@@ -462,14 +504,33 @@ function Dashboard() {
                   <Line data={usageChartData} options={usageChartOptions} />
                 </div>
               </div>
+              
+              <div className="chart-card">
+                <h3>Daily Firestore Cost Analysis</h3>
+                <div className="chart-subtitle">
+                  Daily spending on Firestore Read, Write, Delete operations
+                </div>
+                <div className="chart-container">
+                  <Bar data={firestoreChartData} options={costChartOptions} />
+                </div>
+              </div>
 
               <div className="chart-card">
                 <h3>Daily Cost Analysis</h3>
                 <div className="chart-subtitle">
-                  Daily spending on Firestore operations
+                  Daily total spending
                 </div>
                 <div className="chart-container">
                   <Bar data={costChartData} options={costChartOptions} />
+                </div>
+              </div>
+              <div className="chart-card">
+                <h3>Daily OpenAi Cost Analysis</h3>
+                <div className="chart-subtitle">
+                  Daily spending on OpenAi operations
+                </div>
+                <div className="chart-container">
+                  <Bar data={openaiChartData} options={costChartOptions} />
                 </div>
               </div>
             </div>
@@ -576,6 +637,10 @@ function Dashboard() {
                   <div className="breakdown-item">
                     <span>Functions:</span>
                     <span>{formatCurrency(billing?.totalCosts?.cloudFunctionInvocationCost)}</span>
+                  </div>
+                  <div className="breakdown-item">
+                    <span>OpenAI:</span>
+                    <span>{formatCurrency(billing?.totalCosts?.openaiCost)}</span>
                   </div>
                 </div>
               </div>
