@@ -1,10 +1,21 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './PromotersPage.css';
 
 function PromotersPage() {
   const [promoters, setPromoters] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    itemsPerPage: 20,
+    hasNextPage: false,
+    hasPrevPage: false
+  });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('active');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -21,6 +32,60 @@ function PromotersPage() {
     },
     code: ''
   });
+
+  // Fetch promoters from API
+  const fetchPromoters = async (page = 1, search = '', status = 'active') => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: '20',
+        status: status,
+        ...(search && { search: search })
+      });
+      
+      const response = await fetch(`https://savepromotor-zbhi5gq6gq-uc.a.run.app/getPromotorsList?${params}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setPromoters(data.promotors || []);
+          setPagination(data.pagination);
+        } else {
+          console.error('Failed to fetch promoters:', data.message);
+        }
+      } else {
+        console.error('Failed to fetch promoters:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error fetching promoters:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load promoters on component mount
+  useEffect(() => {
+    fetchPromoters(1, searchTerm, statusFilter);
+  }, []);
+
+  // Handle search
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    fetchPromoters(1, value, statusFilter);
+  };
+
+  // Handle status filter change
+  const handleStatusFilterChange = (status) => {
+    setStatusFilter(status);
+    fetchPromoters(1, searchTerm, status);
+  };
+
+  // Handle pagination
+  const handlePageChange = (page) => {
+    fetchPromoters(page, searchTerm, statusFilter);
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -106,7 +171,8 @@ function PromotersPage() {
           subscribers: 0
         };
 
-        setPromoters(prev => [...prev, newPromoter]);
+        // Refresh promoters list
+        fetchPromoters(pagination.currentPage, searchTerm, statusFilter);
         setShowModal(false);
         
         // Reset form
@@ -142,7 +208,29 @@ function PromotersPage() {
     <div className="promoters-page">
       <div className="page-header">
         <h1>Manage Promoters</h1>
-        <button className="add-btn" onClick={() => setShowModal(true)}>Add New</button>
+        <div className="header-controls">
+          <div className="search-container">
+            <input
+              type="text"
+              placeholder="Search promoters..."
+              value={searchTerm}
+              onChange={handleSearch}
+              className="search-input"
+            />
+          </div>
+          <div className="status-filter">
+            <select 
+              value={statusFilter} 
+              onChange={(e) => handleStatusFilterChange(e.target.value)}
+              className="status-select"
+            >
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+              <option value="">All Status</option>
+            </select>
+          </div>
+          <button className="add-btn" onClick={() => setShowModal(true)}>Add New</button>
+        </div>
       </div>
       
       <div className="promoters-table-container">
@@ -158,20 +246,26 @@ function PromotersPage() {
             </tr>
           </thead>
           <tbody>
-            {promoters.length === 0 ? (
+            {loading ? (
               <tr>
                 <td colSpan="6" className="no-data">
-                  No promoter added yet.
+                  Loading promoters...
+                </td>
+              </tr>
+            ) : promoters.length === 0 ? (
+              <tr>
+                <td colSpan="6" className="no-data">
+                  No promoters found.
                 </td>
               </tr>
             ) : (
               promoters.map((promoter, index) => (
-                <tr key={index}>
+                <tr key={promoter.id || index}>
                   <td>{promoter.name}</td>
                   <td>{promoter.email}</td>
                   <td className="promo-link">{promoter.promoLink}</td>
-                  <td>{promoter.install}</td>
-                  <td>{promoter.subscribers}</td>
+                  <td>{promoter.install || 0}</td>
+                  <td>{promoter.subscribers || 0}</td>
                   <td>
                     <button className="action-btn">Edit</button>
                     <button className="action-btn delete">Delete</button>
@@ -182,6 +276,34 @@ function PromotersPage() {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      {!loading && promoters.length > 0 && (
+        <div className="pagination-container">
+          <div className="pagination-info">
+            Showing {((pagination.currentPage - 1) * pagination.itemsPerPage) + 1} to {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} of {pagination.totalItems} promoters
+          </div>
+          <div className="pagination-controls">
+            <button 
+              className="pagination-btn" 
+              onClick={() => handlePageChange(pagination.currentPage - 1)}
+              disabled={!pagination.hasPrevPage}
+            >
+              Previous
+            </button>
+            <span className="page-info">
+              Page {pagination.currentPage} of {pagination.totalPages}
+            </span>
+            <button 
+              className="pagination-btn" 
+              onClick={() => handlePageChange(pagination.currentPage + 1)}
+              disabled={!pagination.hasNextPage}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Add Promoter Modal */}
       {showModal && (
