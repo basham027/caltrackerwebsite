@@ -178,6 +178,7 @@ function Dashboard() {
     const dailyReads = [];
     const dailyWrites = [];
     const dailyDeletes = [];
+    const dailyOpenAiOperations = [];
     
     const operationsData = dashboardData?.report?.dailyUsage || [];
     console.log('operationsData', operationsData)
@@ -199,6 +200,7 @@ function Dashboard() {
       const dailyRead = (operations.read || 0).toFixed(2);
       const dailyWrite = (operations.write || 0).toFixed(2);
       const dailyDelete = (operations.delete || 0).toFixed(2);
+      const dailyOpenAiOperation = (operations.openai_requests || 0);
       const dailyCost =   (operationsData[i].costs.totalDayCost || 0).toFixed(2);
       const firestoreCost =   (operationsData[i].costs.totalFirestoreCost || 0).toFixed(2);
       const openaiCost =   (operationsData[i].costs.openaiCost || 0).toFixed(2);
@@ -211,14 +213,15 @@ function Dashboard() {
       dailyDeletes.push(dailyDelete);
       dailyCosts.push(dailyCost);
       openaiCosts.push(openaiCost);
-      firestoreCosts.push(firestoreCost)
+      firestoreCosts.push(firestoreCost);
+      dailyOpenAiOperations.push(dailyOpenAiOperation)
     }
     
-    return { dailyLabels, dailyOperations, dailyCosts, dailyReads, dailyWrites, dailyDeletes, openaiCosts, firestoreCosts };
+    return { dailyLabels, dailyOperations, dailyCosts, dailyReads, dailyWrites, dailyDeletes, openaiCosts, firestoreCosts, dailyOpenAiOperations };
   };
 
-  const { dailyLabels, dailyOperations, dailyCosts, dailyReads, dailyWrites, dailyDeletes, openaiCosts, firestoreCosts } = dashboardData ? generateDailyData() : {
-    dailyLabels: [], dailyOperations: [], dailyCosts: [], dailyReads: [], dailyWrites: [], dailyDeletes: [], openaiCosts: [], firestoreCosts: []
+  const { dailyLabels, dailyOperations, dailyCosts, dailyReads, dailyWrites, dailyDeletes, openaiCosts, firestoreCosts, dailyOpenAiOperations } = dashboardData ? generateDailyData() : {
+    dailyLabels: [], dailyOperations: [], dailyCosts: [], dailyReads: [], dailyWrites: [], dailyDeletes: [], openaiCosts: [], firestoreCosts: [], dailyOpenAiOperations: []
   };
 
   const usageChartData = {
@@ -278,6 +281,21 @@ function Dashboard() {
       {
         label: 'Firestore Costs ($)',
         data: firestoreCosts,
+        borderColor: 'rgba(74, 222, 128, 0.9)',
+        backgroundColor: 'rgba(74, 222, 128, 0.2)',
+        borderWidth: 2,
+        borderRadius: 6,
+        borderSkipped: false,
+      },
+    ],
+  };
+  
+  const openaiOperationChartData = {
+    labels: dailyLabels,
+    datasets: [
+      {
+        label: 'Openai Operations',
+        data: dailyOpenAiOperations,
         borderColor: 'rgba(74, 222, 128, 0.9)',
         backgroundColor: 'rgba(74, 222, 128, 0.2)',
         borderWidth: 2,
@@ -531,6 +549,15 @@ function Dashboard() {
                 </div>
                 <div className="chart-container">
                   <Bar data={openaiChartData} options={costChartOptions} />
+                </div>
+              </div>
+              <div className="chart-card">
+                <h3>Daily Openai Requests</h3>
+                <div className="chart-subtitle">
+                  Daily openai operations
+                </div>
+                <div className="chart-container">
+                  <Bar data={openaiOperationChartData} options={usageChartOptions} />
                 </div>
               </div>
             </div>
