@@ -44,7 +44,7 @@ function PromotersPage() {
         ...(search && { search: search })
       });
       
-      const response = await fetch(`https://savepromotor-zbhi5gq6gq-uc.a.run.app/getPromotorsList?${params}`);
+      const response = await fetch(`https://getpromotorslist-zbhi5gq6gq-uc.a.run.app?${params}`);
       
       if (response.ok) {
         const data = await response.json();
@@ -219,8 +219,8 @@ function PromotersPage() {
             />
           </div>
           <div className="status-filter">
-            <select 
-              value={statusFilter} 
+            <select
+              value={statusFilter}
               onChange={(e) => handleStatusFilterChange(e.target.value)}
               className="status-select"
             >
@@ -284,8 +284,8 @@ function PromotersPage() {
             Showing {((pagination.currentPage - 1) * pagination.itemsPerPage) + 1} to {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} of {pagination.totalItems} promoters
           </div>
           <div className="pagination-controls">
-            <button 
-              className="pagination-btn" 
+            <button
+              className="pagination-btn"
               onClick={() => handlePageChange(pagination.currentPage - 1)}
               disabled={!pagination.hasPrevPage}
             >
@@ -294,8 +294,8 @@ function PromotersPage() {
             <span className="page-info">
               Page {pagination.currentPage} of {pagination.totalPages}
             </span>
-            <button 
-              className="pagination-btn" 
+            <button
+              className="pagination-btn"
               onClick={() => handlePageChange(pagination.currentPage + 1)}
               disabled={!pagination.hasNextPage}
             >
