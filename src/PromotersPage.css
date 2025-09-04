@@ -1,4 +1,3 @@
-
 .promoters-page {
   background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
   min-height: 100vh;
@@ -292,16 +291,32 @@
   border: none;
   padding: 12px 24px;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   cursor: pointer;
-  width: 300px;
-  margin-top: 30px;
-  margin-bottom: 20px;
+  width: 100%;
+  margin-top: 20px;
+  transition: background 0.2s ease;
 }
 
-.add-user-btn:hover {
+.add-user-btn:hover:not(:disabled) {
   background: #3367d6;
+}
+
+.add-user-btn:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+}
+
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.loading-container span {
+  font-size: 14px;
 }
 
 /* Pagination Styles */

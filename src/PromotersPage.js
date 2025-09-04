@@ -1,11 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
+import { ClipLoader } from 'react-spinners';
 import './PromotersPage.css';
 
 function PromotersPage() {
   const [promoters, setPromoters] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 1,
@@ -142,6 +144,7 @@ function PromotersPage() {
     }
 
     try {
+      setSaving(true);
       const selectedPlatforms = Object.keys(formData.platforms)
         .filter(platform => formData.platforms[platform]);
       
@@ -201,6 +204,8 @@ function PromotersPage() {
     } catch (error) {
       console.error('Error saving promoter:', error);
       alert('Error saving promoter. Please try again.');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -433,8 +438,15 @@ function PromotersPage() {
                 </div>
               </div>
 
-              <button className="add-user-btn" onClick={handleAddPromoter}>
-                Add User
+              <button className="add-user-btn" onClick={handleAddPromoter} disabled={saving}>
+                {saving ? (
+                  <div className="loading-container">
+                    <ClipLoader color="#ffffff" size={20} />
+                    <span>Saving...</span>
+                  </div>
+                ) : (
+                  'Add User'
+                )}
               </button>
             </div>
           </div>
