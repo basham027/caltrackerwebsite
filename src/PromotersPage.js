@@ -45,40 +45,96 @@ function PromotersPage() {
     setFormData(prev => ({ ...prev, code }));
   };
 
-  const handleAddPromoter = () => {
-    if (formData.name && formData.email && formData.code) {
+  const handleAddPromoter = async () => {
+    // Validation
+    if (!formData.name.trim()) {
+      alert('Please enter a name');
+      return;
+    }
+    
+    if (!formData.email.trim()) {
+      alert('Please enter an email');
+      return;
+    }
+    
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      alert('Please enter a valid email address');
+      return;
+    }
+    
+    if (!formData.code.trim()) {
+      alert('Please generate a code');
+      return;
+    }
+    
+    // Check if at least one platform is selected
+    const hasSelectedPlatform = Object.values(formData.platforms).some(platform => platform);
+    if (!hasSelectedPlatform) {
+      alert('Please select at least one platform');
+      return;
+    }
+
+    try {
       const selectedPlatforms = Object.keys(formData.platforms)
-        .filter(platform => formData.platforms[platform])
-        .join(', ');
+        .filter(platform => formData.platforms[platform]);
       
-      const newPromoter = {
+      const promoterData = {
         name: formData.name,
         email: formData.email,
         platforms: selectedPlatforms,
         code: formData.code,
-        promoLink: `https://capcalai.com?ref=${formData.code}`,
-        install: 0,
-        subscribers: 0
+        promoLink: `https://capcalai.com?ref=${formData.code}`
       };
 
-      setPromoters(prev => [...prev, newPromoter]);
-      setShowModal(false);
-      setFormData({
-        name: '',
-        email: '',
-        platforms: {
-          tiktok: false,
-          facebook: false,
-          instagram: false,
-          youtube: false,
-          linkedin: false,
-          x: false,
-          threads: false,
-          pinterest: false,
-          others: false
+      // Call API to save promoter
+      const response = await fetch('https://us-central1-calorie-tracker-app-87bcb.cloudfunctions.net/savePromotor', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        code: ''
+        body: JSON.stringify(promoterData)
       });
+
+      if (response.ok) {
+        // Add to local state for display
+        const newPromoter = {
+          ...promoterData,
+          platforms: selectedPlatforms.join(', '),
+          install: 0,
+          subscribers: 0
+        };
+
+        setPromoters(prev => [...prev, newPromoter]);
+        setShowModal(false);
+        
+        // Reset form
+        setFormData({
+          name: '',
+          email: '',
+          platforms: {
+            tiktok: false,
+            facebook: false,
+            instagram: false,
+            youtube: false,
+            linkedin: false,
+            x: false,
+            threads: false,
+            pinterest: false,
+            others: false
+          },
+          code: ''
+        });
+        
+        alert('Promoter added successfully!');
+      } else {
+        const errorData = await response.text();
+        alert(`Error saving promoter: ${errorData}`);
+      }
+    } catch (error) {
+      console.error('Error saving promoter:', error);
+      alert('Error saving promoter. Please try again.');
     }
   };
 
