@@ -138,7 +138,7 @@ function PromotersPage() {
             </div>
             
             <div className="modal-content">
-              <div className="form-group">
+              <div className="promotor-form-group">
                 <label>Name:</label>
                 <input
                   type="text"
@@ -149,7 +149,7 @@ function PromotersPage() {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="promotor-form-group">
                 <label>Email:</label>
                 <input
                   type="email"
@@ -160,7 +160,7 @@ function PromotersPage() {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="promotor-form-group">
                 <label>Platform:</label>
                 <div className="platform-checkboxes">
                   <label className="checkbox-item">
@@ -238,7 +238,7 @@ function PromotersPage() {
                 </div>
               </div>
 
-              <div className="form-group code-group">
+              <div className="promotor-form-group code-group">
                 <label>Code:</label>
                 <div className="code-input-container">
                   <input
