@@ -1,0 +1,102 @@
+
+.promoters-page {
+  padding: 20px;
+  background: #fff;
+  min-height: 100vh;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.page-header h1 {
+  margin: 0;
+  color: #333;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.add-btn {
+  background: #4285f4;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.add-btn:hover {
+  background: #3367d6;
+}
+
+.promoters-table-container {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.promoters-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.promoters-table th {
+  background: #f8f9fa;
+  color: #666;
+  font-weight: 600;
+  padding: 15px 12px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.promoters-table td {
+  padding: 15px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  color: #333;
+}
+
+.promoters-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.no-data {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 40px 12px !important;
+}
+
+.action-btn {
+  background: transparent;
+  border: 1px solid #ddd;
+  padding: 4px 8px;
+  margin-right: 5px;
+  border-radius: 3px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+  background: #f0f0f0;
+}
+
+.action-btn.delete {
+  color: #d32f2f;
+  border-color: #d32f2f;
+}
+
+.action-btn.delete:hover {
+  background: #d32f2f;
+  color: white;
+}

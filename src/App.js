@@ -6,6 +6,8 @@ import Home from "./Home";
 import Dashboard from "./Dashboard";
 import Login from "./Login";
 import ProtectedRoute from "./ProtectedRoute";
+import Navbar from "./Navbar";
+import PromotersPage from "./PromotersPage";
 
 function App() {
   
@@ -111,14 +113,37 @@ function App() {
         <Routes>
          {/* <Route path="/" element={<Home />} />*/}
           <Route path="/" element={<ProtectedRoute>
-            <Dashboard />
+            <div style={{ display: 'flex' }}>
+              <Navbar />
+              <div style={{ marginLeft: '200px', flex: 1 }}>
+                <Dashboard />
+              </div>
+            </div>
           </ProtectedRoute>} />
           <Route path="/login" element={<Login />} />
           <Route
             path="/dashboard"
             element={
               <ProtectedRoute>
-                <Dashboard />
+                <div style={{ display: 'flex' }}>
+                  <Navbar />
+                  <div style={{ marginLeft: '200px', flex: 1 }}>
+                    <Dashboard />
+                  </div>
+                </div>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/promoters"
+            element={
+              <ProtectedRoute>
+                <div style={{ display: 'flex' }}>
+                  <Navbar />
+                  <div style={{ marginLeft: '200px', flex: 1 }}>
+                    <PromotersPage />
+                  </div>
+                </div>
               </ProtectedRoute>
             }
           />
