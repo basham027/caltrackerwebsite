@@ -41,7 +41,7 @@ function PromotersPage() {
   };
 
   const generateCode = () => {
-    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const code = 'promo'+Math.random().toString(36).substring(2, 8).toUpperCase();
     setFormData(prev => ({ ...prev, code }));
   };
 
@@ -85,11 +85,11 @@ function PromotersPage() {
         email: formData.email,
         platforms: selectedPlatforms,
         code: formData.code,
-        promoLink: `https://capcalai.com?ref=${formData.code}`
+        promoLink: `https://capcalai.com/com.mafooly.caloriai/invite/${formData.code}`
       };
 
       // Call API to save promoter
-      const response = await fetch('https://us-central1-calorie-tracker-app-87bcb.cloudfunctions.net/savePromotor', {
+      const response = await fetch('https://savepromotor-zbhi5gq6gq-uc.a.run.app', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
