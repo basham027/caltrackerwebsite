@@ -109,11 +109,11 @@ function App() {
     <div className="App">
       <Router>
         <Routes>
-          <Route path="/" element={<Home />} />
-          {/*<Route path="/" element={<ProtectedRoute>
+         {/* <Route path="/" element={<Home />} />*/}
+          <Route path="/" element={<ProtectedRoute>
             <Dashboard />
-          </ProtectedRoute>} />*/}
-          {/*<Route path="/login" element={<Login />} />
+          </ProtectedRoute>} />
+          <Route path="/login" element={<Login />} />
           <Route
             path="/dashboard"
             element={
@@ -121,8 +121,8 @@ function App() {
                 <Dashboard />
               </ProtectedRoute>
             }
-          />*/}
-          <Route path="*" element={<Home />} />
+          />
+          {/*<Route path="*" element={<Home />} />*/}
         </Routes>
       </Router>
     </div>
