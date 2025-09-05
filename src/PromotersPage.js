@@ -108,7 +108,7 @@ function PromotersPage() {
   };
 
   const generateCode = () => {
-    const code = 'promo'+Math.random().toString(36).substring(2, 8).toUpperCase();
+    const code = 'PROMO'+Math.random().toString(36).substring(2, 8).toUpperCase();
     setFormData(prev => ({ ...prev, code }));
   };
 
@@ -269,7 +269,7 @@ function PromotersPage() {
                   <td>{promoter.name}</td>
                   <td>{promoter.email}</td>
                   <td className="promo-link">{promoter.promoLink}</td>
-                  <td>{promoter.install || 0}</td>
+                  <td>{promoter.installs || 0}</td>
                   <td>{promoter.subscribers || 0}</td>
                   <td>
                     <button className="action-btn">Edit</button>

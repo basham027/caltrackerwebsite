@@ -101,6 +101,7 @@
   padding: 15px 12px;
   border-bottom: 1px solid #f0f0f0;
   color: #333;
+  text-align: left;
 }
 
 .promoters-table tbody tr:hover {
