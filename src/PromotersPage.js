@@ -8,6 +8,7 @@ function PromotersPage() {
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(null);
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 1,
@@ -209,6 +210,25 @@ function PromotersPage() {
     }
   };
 
+  const copyToClipboard = async (link) => {
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopiedLink(link);
+      setTimeout(() => setCopiedLink(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy link:', err);
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = link;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopiedLink(link);
+      setTimeout(() => setCopiedLink(null), 2000);
+    }
+  };
+
   return (
     <div className="promoters-page">
       <div className="page-header">
@@ -268,7 +288,26 @@ function PromotersPage() {
                 <tr key={promoter.id || index}>
                   <td>{promoter.name}</td>
                   <td>{promoter.email}</td>
-                  <td className="promo-link">{promoter.promoLink}</td>
+                  <td className="promo-link-cell">
+                    <div className="promo-link-container">
+                      <a 
+                        href={promoter.promoLink} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="promo-link"
+                        title={promoter.promoLink}
+                      >
+                        {promoter.promoLink}
+                      </a>
+                      <button 
+                        className="copy-btn"
+                        onClick={() => copyToClipboard(promoter.promoLink)}
+                        title="Copy link"
+                      >
+                        {copiedLink === promoter.promoLink ? '✓' : '📋'}
+                      </button>
+                    </div>
+                  </td>
                   <td>{promoter.installs || 0}</td>
                   <td>{promoter.subscribers || 0}</td>
                   <td>

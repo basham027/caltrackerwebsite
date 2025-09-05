@@ -140,11 +140,54 @@
   color: white;
 }
 
+.promo-link-cell {
+  max-width: 250px;
+}
+
+.promo-link-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .promo-link {
+  color: #4285f4;
+  text-decoration: none;
   max-width: 200px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  display: block;
+  transition: color 0.2s ease;
+}
+
+.promo-link:hover {
+  color: #3367d6;
+  text-decoration: underline;
+}
+
+.copy-btn {
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 28px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.copy-btn:hover {
+  background: #e8f0fe;
+  border-color: #4285f4;
+}
+
+.copy-btn:active {
+  background: #d2e3fc;
 }
 
 /* Modal Styles */
