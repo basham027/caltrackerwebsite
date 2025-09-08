@@ -57,6 +57,7 @@ export default function Home() {
     email: "",
     message: "",
   });
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -94,6 +95,43 @@ export default function Home() {
       alert("Failed to send. Please try again later.");
     }
   };
+
+  const handleStartFreeTrial = async () => {
+    try {
+      // Check if user has premium subscription
+      // You'll need to replace this with your actual API endpoint to check subscription status
+      const response = await fetch('YOUR_SUBSCRIPTION_CHECK_API_ENDPOINT', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // Add any necessary authentication or user identification
+        body: JSON.stringify({
+          // Add user identification data here
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.hasPremiumSubscription || data.hasActiveSubscription) {
+        // Show modal if user has premium subscription
+        setShowPremiumModal(true);
+      } else {
+        // Proceed with free trial activation
+        // Add your free trial activation logic here
+        console.log('Activating free trial...');
+        // You might want to navigate to a different page or show success message
+      }
+    } catch (error) {
+      console.error('Error checking subscription status:', error);
+      // Handle error - maybe show an error message or proceed with trial
+    }
+  };
+
+  const closePremiumModal = () => {
+    setShowPremiumModal(false);
+  };
+
   return (
     <div>
       {/* HERO SECTION */}
@@ -195,7 +233,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* LINKS */}
+      {/*LINKS */}
       <div className="links">
         <a href="privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
         <a href="terms.html" target="_blank" rel="noopener noreferrer">Terms of Service</a>
@@ -204,6 +242,20 @@ export default function Home() {
       <footer>
         &copy; 2025 CapCal AI. All rights reserved.
       </footer>
+
+      {/* Premium Subscription Modal */}
+      {showPremiumModal && (
+        <div className="modal-overlay">
+          <div className="premium-modal">
+            <div className="modal-content">
+              <h2>You already have an active subscription from the store. Please cancel your current subscription to activate your free months.</h2>
+              <button className="modal-ok-button" onClick={closePremiumModal}>
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
