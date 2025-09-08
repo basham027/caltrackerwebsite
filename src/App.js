@@ -40,11 +40,40 @@ function App() {
   }
   
   useEffect(() => {
+    const getPublicIP = async () => {
+      const ipAPIs = [
+        'https://api.ipify.org/?format=json',
+        'http://ip-api.com/json/',
+        'https://ipwhois.app/json/'
+      ];
+
+      for (const apiUrl of ipAPIs) {
+        try {
+          const response = await fetch(apiUrl, { timeout: 5000 });
+          if (response.ok) {
+            const data = await response.json();
+            // Different APIs return IP in different field names
+            const ip = data.ip || data.query || data.ip_address;
+            if (ip) {
+              console.log(`Got IP from ${apiUrl}:`, ip);
+              return ip;
+            }
+          }
+        } catch (error) {
+          console.warn(`Failed to get IP from ${apiUrl}:`, error);
+          continue;
+        }
+      }
+      
+      // Fallback if all APIs fail
+      console.warn('All IP APIs failed, using fallback');
+      return 'unknown';
+    };
+
     const logClick = async (refCode) => {
-      // Get public IP
-      const publicIpRes = await fetch('https://api.ipify.org?format=json');
-      const publicIp = (await publicIpRes.json()).ip;
-      const deviceName= getDeviceName();
+      // Get public IP with fallback logic
+      const publicIp = await getPublicIP();
+      const deviceName = getDeviceName();
       console.log('publicIp', publicIp)
       
       // Get local IPs
