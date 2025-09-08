@@ -111,8 +111,26 @@ function App() {
     };
     
     if(window.location.href.includes("com.mafooly.caloriai/invite/")){
-      const refCode = window.location.href.split('com.mafooly.caloriai/invite/').pop();
-      if (refCode) logClick(refCode);
+      try {
+        const urlParts = window.location.href.split('com.mafooly.caloriai/invite/');
+        
+        // Check if split was successful and we have the expected parts
+        if (urlParts.length >= 2) {
+          const refCode = urlParts.pop().trim();
+          
+          // Validate referral code - ensure it's not empty and meets basic criteria
+          if (refCode && refCode.length > 0 && refCode !== '/' && !refCode.includes(' ')) {
+            console.log('Processing referral code:', refCode);
+            logClick(refCode);
+          } else {
+            console.warn('Invalid referral code detected:', refCode);
+          }
+        } else {
+          console.warn('URL format is incorrect for referral processing');
+        }
+      } catch (error) {
+        console.error('Error processing referral code from URL:', error);
+      }
     }
   }, []);
   
