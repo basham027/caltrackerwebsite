@@ -15,7 +15,7 @@ function App() {
     const parser = new UAParser();
     const result = parser.getResult();
     
-    return `${result.device.vendor || "Unknown"}${result.device.model || ""}${result.os.name}${result.os.version}`;
+    return `${result?.device?.vendor || "Unknown"}${result?.device?.model || ""}${result?.os?.name}${result?.os?.version}`;
   }
   
   function getLocalIPs(callback) {
@@ -111,8 +111,8 @@ function App() {
     <div className="App">
       <Router>
         <Routes>
-         {/* <Route path="/" element={<Home />} />*/}
-          <Route path="/" element={<ProtectedRoute>
+          <Route path="/" element={<Home />} />
+          {/*<Route path="/" element={<ProtectedRoute>
             <div style={{ display: 'flex' }}>
               <Navbar />
               <div style={{ marginLeft: '200px', flex: 1 }}>
@@ -146,8 +146,8 @@ function App() {
                 </div>
               </ProtectedRoute>
             }
-          />
-          {/*<Route path="*" element={<Home />} />*/}
+          />*/}
+          <Route path="*" element={<Home />} />
         </Routes>
       </Router>
     </div>

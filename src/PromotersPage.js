@@ -265,6 +265,7 @@ function PromotersPage() {
               <th>Name</th>
               <th>Email</th>
               <th>Promo Link</th>
+              <th>Clicks</th>
               <th>Install</th>
               <th>Subscribers</th>
               <th>Action</th>
@@ -290,16 +291,16 @@ function PromotersPage() {
                   <td>{promoter.email}</td>
                   <td className="promo-link-cell">
                     <div className="promo-link-container">
-                      <a 
-                        href={promoter.promoLink} 
-                        target="_blank" 
+                      <a
+                        href={promoter.promoLink}
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="promo-link"
                         title={promoter.promoLink}
                       >
                         {promoter.promoLink}
                       </a>
-                      <button 
+                      <button
                         className="copy-btn"
                         onClick={() => copyToClipboard(promoter.promoLink)}
                         title="Copy link"
@@ -308,6 +309,7 @@ function PromotersPage() {
                       </button>
                     </div>
                   </td>
+                  <td>{promoter.promoClicks || 0}</td>
                   <td>{promoter.installs || 0}</td>
                   <td>{promoter.subscribers || 0}</td>
                   <td>
