@@ -35,6 +35,10 @@ function PromotersPage() {
     },
     code: ''
   });
+  const [editModal, setEditModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [selectedPromoter, setSelectedPromoter] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   // Fetch promoters from API
   const fetchPromoters = async (page = 1, search = '', status = 'active') => {
@@ -229,6 +233,164 @@ function PromotersPage() {
     }
   };
 
+  const handleEditPromoter = (promoter) => {
+    setSelectedPromoter(promoter);
+    
+    // Parse platforms back to object format
+    const platformsArray = typeof promoter.platforms === 'string' 
+      ? promoter.platforms.split(', ') 
+      : promoter.platforms || [];
+    
+    const platformsObject = {
+      tiktok: platformsArray.includes('tiktok'),
+      facebook: platformsArray.includes('facebook'),
+      instagram: platformsArray.includes('instagram'),
+      youtube: platformsArray.includes('youtube'),
+      linkedin: platformsArray.includes('linkedin'),
+      x: platformsArray.includes('x'),
+      threads: platformsArray.includes('threads'),
+      pinterest: platformsArray.includes('pinterest'),
+      others: platformsArray.includes('others')
+    };
+
+    setFormData({
+      name: promoter.name || '',
+      email: promoter.email || '',
+      platforms: platformsObject,
+      code: promoter.code || ''
+    });
+    
+    setEditModal(true);
+  };
+
+  const handleUpdatePromoter = async () => {
+    // Validation
+    if (!formData.name.trim()) {
+      alert('Please enter a name');
+      return;
+    }
+    
+    if (!formData.email.trim()) {
+      alert('Please enter an email');
+      return;
+    }
+    
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      alert('Please enter a valid email address');
+      return;
+    }
+    
+    if (!formData.code.trim()) {
+      alert('Please generate a code');
+      return;
+    }
+    
+    // Check if at least one platform is selected
+    const hasSelectedPlatform = Object.values(formData.platforms).some(platform => platform);
+    if (!hasSelectedPlatform) {
+      alert('Please select at least one platform');
+      return;
+    }
+
+    try {
+      setSaving(true);
+      const selectedPlatforms = Object.keys(formData.platforms)
+        .filter(platform => formData.platforms[platform]);
+      
+      const promoterData = {
+        id: selectedPromoter.id,
+        name: formData.name,
+        email: formData.email,
+        platforms: selectedPlatforms,
+        code: formData.code,
+        promoLink: `https://capcalai.com/com.mafooly.caloriai/invite/${formData.code}`
+      };
+
+      // Call API to update promoter
+      const response = await fetch('https://updatepromotor-zbhi5gq6gq-uc.a.run.app', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(promoterData)
+      });
+
+      if (response.ok) {
+        // Refresh promoters list
+        fetchPromoters(pagination.currentPage, searchTerm, statusFilter);
+        setEditModal(false);
+        setSelectedPromoter(null);
+        
+        // Reset form
+        setFormData({
+          name: '',
+          email: '',
+          platforms: {
+            tiktok: false,
+            facebook: false,
+            instagram: false,
+            youtube: false,
+            linkedin: false,
+            x: false,
+            threads: false,
+            pinterest: false,
+            others: false
+          },
+          code: ''
+        });
+        
+        alert('Promoter updated successfully!');
+      } else {
+        const errorData = await response.text();
+        alert(`Error updating promoter: ${errorData}`);
+      }
+    } catch (error) {
+      console.error('Error updating promoter:', error);
+      alert('Error updating promoter. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDeletePromoter = (promoter) => {
+    setSelectedPromoter(promoter);
+    setDeleteModal(true);
+  };
+
+  const confirmDeletePromoter = async () => {
+    if (!selectedPromoter) return;
+
+    try {
+      setDeleting(true);
+      
+      const response = await fetch('https://deletepromotor-zbhi5gq6gq-uc.a.run.app', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: selectedPromoter.id })
+      });
+
+      if (response.ok) {
+        // Refresh promoters list
+        fetchPromoters(pagination.currentPage, searchTerm, statusFilter);
+        setDeleteModal(false);
+        setSelectedPromoter(null);
+        alert('Promoter deleted successfully!');
+      } else {
+        const errorData = await response.text();
+        alert(`Error deleting promoter: ${errorData}`);
+      }
+    } catch (error) {
+      console.error('Error deleting promoter:', error);
+      alert('Error deleting promoter. Please try again.');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   return (
     <div className="promoters-page">
       <div className="page-header">
@@ -313,8 +475,8 @@ function PromotersPage() {
                   <td>{promoter.installs || 0}</td>
                   <td>{promoter.subscribers || 0}</td>
                   <td>
-                    <button className="action-btn">Edit</button>
-                    <button className="action-btn delete">Delete</button>
+                    <button className="action-btn" onClick={() => handleEditPromoter(promoter)}>Edit</button>
+                    <button className="action-btn delete" onClick={() => handleDeletePromoter(promoter)}>Delete</button>
                   </td>
                 </tr>
               ))
@@ -489,6 +651,194 @@ function PromotersPage() {
                   'Add User'
                 )}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Promoter Modal */}
+      {editModal && selectedPromoter && (
+        <div className="modal-overlay">
+          <div className="modal-container">
+            <div className="modal-header">
+              <button className="back-btn" onClick={() => {setEditModal(false); setSelectedPromoter(null);}}>
+                ← Edit Promoter
+              </button>
+            </div>
+            
+            <div className="modal-content">
+              <div className="promotor-form-group">
+                <label>Name:</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  placeholder="Enter promoter name"
+                />
+              </div>
+
+              <div className="promotor-form-group">
+                <label>Email:</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder="Enter email address"
+                />
+              </div>
+
+              <div className="promotor-form-group">
+                <label>Platform:</label>
+                <div className="platform-checkboxes">
+                  <label className="checkbox-item">
+                    <input
+                      type="checkbox"
+                      checked={formData.platforms.tiktok}
+                      onChange={() => handlePlatformChange('tiktok')}
+                    />
+                    TikTok
+                  </label>
+                  <label className="checkbox-item">
+                    <input
+                      type="checkbox"
+                      checked={formData.platforms.facebook}
+                      onChange={() => handlePlatformChange('facebook')}
+                    />
+                    Facebook
+                  </label>
+                  <label className="checkbox-item">
+                    <input
+                      type="checkbox"
+                      checked={formData.platforms.instagram}
+                      onChange={() => handlePlatformChange('instagram')}
+                    />
+                    Instagram
+                  </label>
+                  <label className="checkbox-item">
+                    <input
+                      type="checkbox"
+                      checked={formData.platforms.youtube}
+                      onChange={() => handlePlatformChange('youtube')}
+                    />
+                    Youtube
+                  </label>
+                  <label className="checkbox-item">
+                    <input
+                      type="checkbox"
+                      checked={formData.platforms.linkedin}
+                      onChange={() => handlePlatformChange('linkedin')}
+                    />
+                    LinkedIn
+                  </label>
+                  <label className="checkbox-item">
+                    <input
+                      type="checkbox"
+                      checked={formData.platforms.x}
+                      onChange={() => handlePlatformChange('x')}
+                    />
+                    X
+                  </label>
+                  <label className="checkbox-item">
+                    <input
+                      type="checkbox"
+                      checked={formData.platforms.threads}
+                      onChange={() => handlePlatformChange('threads')}
+                    />
+                    Threads
+                  </label>
+                  <label className="checkbox-item">
+                    <input
+                      type="checkbox"
+                      checked={formData.platforms.pinterest}
+                      onChange={() => handlePlatformChange('pinterest')}
+                    />
+                    Pinterest
+                  </label>
+                  <label className="checkbox-item">
+                    <input
+                      type="checkbox"
+                      checked={formData.platforms.others}
+                      onChange={() => handlePlatformChange('others')}
+                    />
+                    Others
+                  </label>
+                </div>
+              </div>
+
+              <div className="promotor-form-group code-group">
+                <label>Code:</label>
+                <div className="code-input-container">
+                  <input
+                    type="text"
+                    name="code"
+                    value={formData.code}
+                    onChange={handleInputChange}
+                    placeholder="Generated code"
+                    readOnly
+                  />
+                  <button className="generate-btn" onClick={generateCode}>
+                    Generate
+                  </button>
+                </div>
+              </div>
+
+              <button className="add-user-btn" onClick={handleUpdatePromoter} disabled={saving}>
+                {saving ? (
+                  <div className="loading-container">
+                    <ClipLoader color="#ffffff" size={20} />
+                    <span>Updating...</span>
+                  </div>
+                ) : (
+                  'Update Promoter'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteModal && selectedPromoter && (
+        <div className="modal-overlay">
+          <div className="modal-container delete-modal">
+            <div className="modal-header">
+              <button className="back-btn" onClick={() => {setDeleteModal(false); setSelectedPromoter(null);}}>
+                ← Delete Promoter
+              </button>
+            </div>
+            
+            <div className="modal-content">
+              <div className="delete-confirmation">
+                <h3>Confirm Delete</h3>
+                <p>Are you sure you want to delete promoter <strong>{selectedPromoter.name}</strong>?</p>
+                <p className="warning">This action cannot be undone.</p>
+                
+                <div className="delete-actions">
+                  <button 
+                    className="cancel-btn" 
+                    onClick={() => {setDeleteModal(false); setSelectedPromoter(null);}}
+                    disabled={deleting}
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    className="confirm-delete-btn" 
+                    onClick={confirmDeletePromoter}
+                    disabled={deleting}
+                  >
+                    {deleting ? (
+                      <div className="loading-container">
+                        <ClipLoader color="#ffffff" size={16} />
+                        <span>Deleting...</span>
+                      </div>
+                    ) : (
+                      'Delete Promoter'
+                    )}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
