@@ -124,12 +124,15 @@ function App() {
             logClick(refCode);
           } else {
             console.warn('Invalid referral code detected:', refCode);
+            alert('Invalid referral code detected:'+ refCode.toString())
           }
         } else {
           console.warn('URL format is incorrect for referral processing');
+          alert('URL format is incorrect for referral processing');
         }
       } catch (error) {
         console.error('Error processing referral code from URL:', error);
+        alert('Error processing referral code from URL:'+ error.toString())
       }
     }
   }, []);
@@ -158,8 +161,8 @@ function App() {
     <div className="App">
       <Router>
         <Routes>
-          <Route path="/" element={<Home />} />
-          {/*<Route path="/" element={<ProtectedRoute>
+         {/* <Route path="/" element={<Home />} />*/}
+          <Route path="/" element={<ProtectedRoute>
             <div style={{ display: 'flex' }}>
               <Navbar />
               <div style={{ marginLeft: '200px', flex: 1 }}>
@@ -193,8 +196,8 @@ function App() {
                 </div>
               </ProtectedRoute>
             }
-          />*/}
-          <Route path="*" element={<Home />} />
+          />
+          {/*<Route path="*" element={<Home />} />*/}
         </Routes>
       </Router>
     </div>
