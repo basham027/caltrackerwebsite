@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { ClipLoader } from 'react-spinners';
 import './PromotersPage.css';
@@ -50,9 +49,9 @@ function PromotersPage() {
         status: status,
         ...(search && { search: search })
       });
-      
+
       const response = await fetch(`https://getpromotorslist-zbhi5gq6gq-uc.a.run.app?${params}`);
-      
+
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
@@ -123,24 +122,24 @@ function PromotersPage() {
       alert('Please enter a name');
       return;
     }
-    
+
     if (!formData.email.trim()) {
       alert('Please enter an email');
       return;
     }
-    
+
     // Email format validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       alert('Please enter a valid email address');
       return;
     }
-    
+
     if (!formData.code.trim()) {
       alert('Please generate a code');
       return;
     }
-    
+
     // Check if at least one platform is selected
     const hasSelectedPlatform = Object.values(formData.platforms).some(platform => platform);
     if (!hasSelectedPlatform) {
@@ -152,7 +151,7 @@ function PromotersPage() {
       setSaving(true);
       const selectedPlatforms = Object.keys(formData.platforms)
         .filter(platform => formData.platforms[platform]);
-      
+
       const promoterData = {
         name: formData.name,
         email: formData.email,
@@ -182,7 +181,7 @@ function PromotersPage() {
         // Refresh promoters list
         fetchPromoters(pagination.currentPage, searchTerm, statusFilter);
         setShowModal(false);
-        
+
         // Reset form
         setFormData({
           name: '',
@@ -200,7 +199,7 @@ function PromotersPage() {
           },
           code: ''
         });
-        
+
         alert('Promoter added successfully!');
       } else {
         const errorData = await response.text();
@@ -235,12 +234,12 @@ function PromotersPage() {
 
   const handleEditPromoter = (promoter) => {
     setSelectedPromoter(promoter);
-    
+
     // Parse platforms back to object format
     const platformsArray = typeof promoter.platforms === 'string' 
       ? promoter.platforms.split(', ') 
       : promoter.platforms || [];
-    
+
     const platformsObject = {
       tiktok: platformsArray.includes('tiktok'),
       facebook: platformsArray.includes('facebook'),
@@ -259,7 +258,7 @@ function PromotersPage() {
       platforms: platformsObject,
       code: promoter.code || ''
     });
-    
+
     setEditModal(true);
   };
 
@@ -269,24 +268,24 @@ function PromotersPage() {
       alert('Please enter a name');
       return;
     }
-    
+
     if (!formData.email.trim()) {
       alert('Please enter an email');
       return;
     }
-    
+
     // Email format validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       alert('Please enter a valid email address');
       return;
     }
-    
+
     if (!formData.code.trim()) {
       alert('Please generate a code');
       return;
     }
-    
+
     // Check if at least one platform is selected
     const hasSelectedPlatform = Object.values(formData.platforms).some(platform => platform);
     if (!hasSelectedPlatform) {
@@ -298,7 +297,7 @@ function PromotersPage() {
       setSaving(true);
       const selectedPlatforms = Object.keys(formData.platforms)
         .filter(platform => formData.platforms[platform]);
-      
+
       const promoterData = {
         id: selectedPromoter.id,
         name: formData.name,
@@ -322,7 +321,7 @@ function PromotersPage() {
         fetchPromoters(pagination.currentPage, searchTerm, statusFilter);
         setEditModal(false);
         setSelectedPromoter(null);
-        
+
         // Reset form
         setFormData({
           name: '',
@@ -340,7 +339,7 @@ function PromotersPage() {
           },
           code: ''
         });
-        
+
         alert('Promoter updated successfully!');
       } else {
         const errorData = await response.text();
@@ -364,7 +363,7 @@ function PromotersPage() {
 
     try {
       setDeleting(true);
-      
+
       const response = await fetch('https://deletepromotor-zbhi5gq6gq-uc.a.run.app', {
         method: 'DELETE',
         headers: {
@@ -419,7 +418,7 @@ function PromotersPage() {
           <button className="add-btn" onClick={() => setShowModal(true)}>Add New</button>
         </div>
       </div>
-      
+
       <div className="promoters-table-container">
         <table className="promoters-table">
           <thead>
@@ -522,7 +521,7 @@ function PromotersPage() {
                 ← Add New
               </button>
             </div>
-            
+
             <div className="modal-content">
               <div className="promotor-form-group">
                 <label>Name:</label>
@@ -635,9 +634,6 @@ function PromotersPage() {
                     placeholder="Generated code"
                     readOnly
                   />
-                  <button className="generate-btn" onClick={generateCode}>
-                    Generate
-                  </button>
                 </div>
               </div>
 
@@ -665,7 +661,7 @@ function PromotersPage() {
                 ← Edit Promoter
               </button>
             </div>
-            
+
             <div className="modal-content">
               <div className="promotor-form-group">
                 <label>Name:</label>
@@ -808,13 +804,13 @@ function PromotersPage() {
                 ← Delete Promoter
               </button>
             </div>
-            
+
             <div className="modal-content">
               <div className="delete-confirmation">
                 <h3>Confirm Delete</h3>
                 <p>Are you sure you want to delete promoter <strong>{selectedPromoter.name}</strong>?</p>
                 <p className="warning">This action cannot be undone.</p>
-                
+
                 <div className="delete-actions">
                   <button 
                     className="cancel-btn" 
