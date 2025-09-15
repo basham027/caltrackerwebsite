@@ -236,8 +236,8 @@ function PromotersPage() {
     setSelectedPromoter(promoter);
 
     // Parse platforms back to object format
-    const platformsArray = typeof promoter.platforms === 'string' 
-      ? promoter.platforms.split(', ') 
+    const platformsArray = typeof promoter.platforms === 'string'
+      ? promoter.platforms.split(', ')
       : promoter.platforms || [];
 
     const platformsObject = {
@@ -415,7 +415,10 @@ function PromotersPage() {
               <option value="">All Status</option>
             </select>
           </div>
-          <button className="add-btn" onClick={() => setShowModal(true)}>Add New</button>
+          <button className="add-btn" onClick={() => {
+            generateCode();
+            setShowModal(true);
+          }}>Add New</button>
         </div>
       </div>
 
@@ -774,9 +777,9 @@ function PromotersPage() {
                     placeholder="Generated code"
                     readOnly
                   />
-                  <button className="generate-btn" onClick={generateCode}>
+                  {/*<button className="generate-btn" onClick={generateCode}>
                     Generate
-                  </button>
+                  </button>*/}
                 </div>
               </div>
 
@@ -812,15 +815,15 @@ function PromotersPage() {
                 <p className="warning">This action cannot be undone.</p>
 
                 <div className="delete-actions">
-                  <button 
-                    className="cancel-btn" 
+                  <button
+                    className="cancel-btn"
                     onClick={() => {setDeleteModal(false); setSelectedPromoter(null);}}
                     disabled={deleting}
                   >
                     Cancel
                   </button>
-                  <button 
-                    className="confirm-delete-btn" 
+                  <button
+                    className="confirm-delete-btn"
                     onClick={confirmDeletePromoter}
                     disabled={deleting}
                   >
