@@ -685,6 +685,7 @@ function PromotersPage() {
                   value={formData.email}
                   onChange={handleInputChange}
                   placeholder="Enter email address"
+                  readOnly
                 />
               </div>
 
@@ -777,9 +778,6 @@ function PromotersPage() {
                     placeholder="Generated code"
                     readOnly
                   />
-                  {/*<button className="generate-btn" onClick={generateCode}>
-                    Generate
-                  </button>*/}
                 </div>
               </div>
 
