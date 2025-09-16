@@ -474,7 +474,7 @@ function PromotersPage() {
                     </div>
                   </td>
                   <td>{promoter.promoClicks || 0}</td>
-                  <td>{promoter.installs || 0}</td>
+                  <td>{promoter.installedCount || 0}</td>
                   <td>{promoter.subscribers || 0}</td>
                   <td>
                     <button className="action-btn" onClick={() => handleEditPromoter(promoter)}>Edit</button>
