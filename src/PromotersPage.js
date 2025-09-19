@@ -687,7 +687,6 @@ function PromotersPage() {
                   value={formData.email}
                   onChange={handleInputChange}
                   placeholder="Enter email address"
-                  readOnly
                 />
               </div>
 
