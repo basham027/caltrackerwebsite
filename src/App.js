@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import {UAParser} from "ua-parser-js";
 import Home from "./Home";
+import { v4 as uuidv4 } from "uuid";
 import Dashboard from "./Dashboard";
 import Login from "./Login";
 import ProtectedRoute from "./ProtectedRoute";
@@ -10,7 +11,14 @@ import Navbar from "./Navbar";
 import PromotersPage from "./PromotersPage";
 
 function App() {
-  
+  function getOrCreateDeviceId() {
+    let deviceId = localStorage.getItem("deviceId");
+    if (!deviceId) {
+      deviceId = uuidv4(); // generate a new unique ID
+      localStorage.setItem("deviceId", deviceId);
+    }
+    return deviceId;
+  }
   function getDeviceName() {
     const parser = new UAParser();
     const result = parser.getResult();
@@ -74,6 +82,7 @@ function App() {
       // Get public IP with fallback logic
       const publicIp = await getPublicIP();
       const deviceName = getDeviceName();
+      const deviceId = getOrCreateDeviceId();
       console.log('publicIp', publicIp)
       
       // Get local IPs
@@ -84,6 +93,7 @@ function App() {
           body:JSON.stringify({
             refererId: refCode,
             deviceName,
+            logDeviceId: deviceId,
             ipAddresses:{
               publicIp,
               localIp

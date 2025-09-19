@@ -98,9 +98,9 @@ export default function Home() {
     <div>
       {/* HERO SECTION */}
       <section className="hero">
-        <img src="hero.png" className="hero-bg-img" alt="CapCal AI Background" />
+        <img src="/hero.png" className="hero-bg-img" alt="CapCal AI Background" />
         <div className="hero-bg-overlay"></div>
-        <img src="logo_rounded.png" alt="CapCal AI App Icon" className="app-logo" />
+        <img src="/logo_rounded.png" alt="CapCal AI App Icon" className="app-logo" />
         <div className="hero-content">
           <div className="hero-title">CapCal AI</div>
           <div className="hero-sub">AI Calorie & Macro Challenges</div>
@@ -117,32 +117,32 @@ export default function Home() {
         <div className="features-row">
           {[
             {
-              img: "Artboard 1.png",
+              img: "/Artboard 1.png",
               title: "Snap, Track, Eat",
               desc: "Monitor calories, macros, BMI, weight, and activity at a glance. Adjust your goals as you progress, and stay aligned with your health journey every day."
             },
             {
-              img: "Artboard 2.png",
+              img: "/Artboard 2.png",
               title: "Snap, Track, Eat",
               desc: "Just snap a picture—CapCal AI instantly analyzes your food, giving you accurate calories and macros with no effort."
             },
             {
-              img: "Artboard 3.png",
+              img: "/Artboard 3.png",
               title: "Know Every Meal",
               desc: "Instantly see protein, fats, carbs, and calories for every meal. Visual, simple, and always at your fingertips."
             },
             {
-              img: "Artboard 4.png",
+              img: "/Artboard 4.png",
               title: "Challenge Friends",
               desc: "Compete in daily and weekly challenges—track steps, calories, and more. Stay accountable and motivated, together!"
             },
             {
-              img: "Artboard 5.png",
+              img: "/Artboard 5.png",
               title: "Celebrate Victories",
               desc: "Win challenges, earn badges, and get cheered on with celebratory popups. Every win counts—big or small!"
             },
             {
-              img: "Artboard 6.png",
+              img: "/Artboard 6.png",
               title: "Your Profile, Your Journey",
               desc: "Unlock achievements, build healthy habits, and show off your progress on your personal profile."
             }

@@ -313,7 +313,7 @@ function PromotersPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(promoterData)
+        body: JSON.stringify({promotorId: selectedPromoter.id,  updateData: promoterData })
       });
 
       if (response.ok) {
@@ -369,7 +369,7 @@ function PromotersPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id: selectedPromoter.id })
+        body: JSON.stringify({ promotorId: selectedPromoter.id })
       });
 
       if (response.ok) {
