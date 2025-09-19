@@ -304,6 +304,7 @@
 
 .code-input-container {
   display: flex;
+  align-items: center;
   gap: 10px;
 }
 
@@ -320,9 +321,8 @@
   padding: 10px 16px;
   border-radius: 4px;
   font-size: 14px;
-  font-weight: 500;
   cursor: pointer;
-  white-space: nowrap;
+  transition: background-color 0.2s ease;
 }
 
 .generate-btn:hover {

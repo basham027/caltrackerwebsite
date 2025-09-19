@@ -634,9 +634,11 @@ function PromotersPage() {
                     name="code"
                     value={formData.code}
                     onChange={handleInputChange}
-                    placeholder="Generated code"
-                    readOnly
+                    placeholder="Enter or generate code"
                   />
+                  <button className="generate-btn" onClick={generateCode}>
+                    Generate
+                  </button>
                 </div>
               </div>
 
@@ -775,9 +777,11 @@ function PromotersPage() {
                     name="code"
                     value={formData.code}
                     onChange={handleInputChange}
-                    placeholder="Generated code"
-                    readOnly
+                    placeholder="Enter or generate code"
                   />
+                  <button className="generate-btn" onClick={generateCode}>
+                    Generate
+                  </button>
                 </div>
               </div>
 
